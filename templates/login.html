@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>log in page</title>
+</head>
+<body>
+<h3>Consultant Login</h3>
+<hr>
+<form method="post">
+    {{ form.csrf_token() }}
+    {{ form.username.label }}{{ form.username }} <br>
+    {{ form.password.label }}{{ form.password }} <br>
+    {{ form.submit }}
+    {% for message in get_flashed_messages() %}
+        {{ message }}
+    {% endfor %}
+</form>
+<hr>
+</body>
+</html>
