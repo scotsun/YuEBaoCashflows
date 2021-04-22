@@ -1,5 +1,7 @@
+from sshtunnel import SSHTunnelForwarder
 from flask import Flask, render_template, request, flash
 from flask_wtf import FlaskForm
+from flask_pymongo import PyMongo
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired
 from pymongo import MongoClient
@@ -7,14 +9,23 @@ from pymongo.errors import OperationFailure
 
 app = Flask(__name__)
 app.secret_key = 'csse433'
+tunnel = SSHTunnelForwarder(
+        "34.67.124.229",
+        ssh_username="apple",
+        ssh_pkey="/Users/apple/Desktop/CSSE433/project-cli-keys/key-instance-1",
+        ssh_private_key_password="csse433",
+        remote_bind_address=("127.0.0.1", 27017)
+    )
+tunnel.start()
+host = "localhost"
+port = tunnel.local_bind_port
+app.config['MONGO_URI'] = f'mongodb://{host}:{port}/?authSource=admin'
+mongo = PyMongo(app)
 
 
 # use connect to mongodb
 def check_login_info(username, password):  # TODO: connect to mongodb
-    host = "localhost"
-    port = 27017
     try:
-        # TODO: set for local for test and debug
         cli = MongoClient(f'mongodb://{username}:{password}@{host}:{port}/?authSource=admin')
         cli.server_info()
         return True
