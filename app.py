@@ -5,7 +5,6 @@ from pymongo import MongoClient
 from pymongo.errors import OperationFailure
 from pprint import pprint
 from forms import *
-import time
 
 app = Flask(__name__)
 app.secret_key = 'csse433'
