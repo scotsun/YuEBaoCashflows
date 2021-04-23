@@ -2,9 +2,19 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Results of {{user.ID}}</title>
 </head>
 <body>
-
+    <table class="table table-striped">
+            <tr>
+                <th>Date</th>
+            </tr>
+        
+        {% for result in results%}
+        <tr>
+            <td>{{result.Date}}</td>
+        </tr>
+        {% endfor %}
+    </table>
 </body>
 </html>
