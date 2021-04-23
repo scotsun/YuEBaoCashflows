@@ -14,12 +14,12 @@ from matplotlib.figure import Figure
 app = Flask(__name__)
 app.secret_key = 'csse433'
 tunnel = SSHTunnelForwarder(
-        "34.67.124.229",
-        ssh_username="sfeng",
-        ssh_pkey="~/.ssh/id_rsa.pub",
-        ssh_private_key_password="",
-        remote_bind_address=("127.0.0.1", 27017)
-    )
+    "34.67.124.229",
+    ssh_username="apple",
+    ssh_pkey="/Users/apple/Desktop/CSSE433/project-cli-keys/key-instance-1",
+    ssh_private_key_password="csse433",
+    remote_bind_address=("127.0.0.1", 27017)
+)
 tunnel.start()
 host = "localhost"
 port = tunnel.local_bind_port
@@ -85,7 +85,8 @@ def date_result():
             {'user_id': customer_id, 'cashflows.report_date': date},
             {'user_id': 1, 'cashflows.$': 1, 'sex': 1, 'city': 1, 'constellation': 1, '_id': 0}
         )
-
+        if record is None:
+            return "no record"
         profile_keys = ['user_id', 'sex', 'city', 'constellation']
         user_profile = {k: record.get(k) for k in profile_keys}
 
@@ -109,7 +110,7 @@ def date_range_result():
             return "Found 0 record"
         profile_keys = ['user_id', 'sex', 'city', 'constellation']
         user_profile = {k: recordCursor.get(k) for k in profile_keys}
-        cashflow_info = cutting_records(recordCursor['cashflows'],date1,date2)
+        cashflow_info = cutting_records(recordCursor['cashflows'], date1, date2)
         plot_data = generate_plot(cashflow_info)
         
         return render_template("date_range_result.html", user_profile=user_profile, cashflow_info=cashflow_info,
