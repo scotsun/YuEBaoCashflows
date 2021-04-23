@@ -60,7 +60,7 @@ def search():
             flash('miss info')
 
         result = mongo.db.customers.find_one(
-            {'user_id': customer_id, 'cashflows.report_date': {"$gte":fromDate, "$lt": toDate}},
+            {'user_id': customer_id, 'cashflows.report_date': {"$gte":fromDate, "$lte": toDate}},
             {'user_id': 1, 'cashflows.$': 1, 'sex': 1, 'city': 1, 'constellation': 1, '_id': 0}
         )
         pprint(result)
