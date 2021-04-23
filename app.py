@@ -5,6 +5,7 @@ from pymongo import MongoClient
 from pymongo.errors import OperationFailure
 from pprint import pprint
 from forms import *
+import time
 
 app = Flask(__name__)
 app.secret_key = 'csse433'
@@ -97,15 +98,25 @@ def date_range_result():
         date1 = int(request.form.get('date1'))
         date2 = int(request.form.get('date2'))
         recordCursor = mongo.db.customer.find_one(
-            {'user_id': customer_id, 'cashflows.report_date': {'$gte':date1, '$lte':date2}},
+            {'user_id': customer_id},
             {'user_id': 1, 'cashflows': 1, 'sex': 1, 'city': 1, 'constellation': 1, '_id': 0}
         )
+        if(recordCursor == None):
+            return "Found 0 record"
         profile_keys = ['user_id', 'sex', 'city', 'constellation']
         user_profile = {k: recordCursor.get(k) for k in profile_keys}
-        cashflow_info = recordCursor['cashflows']
+        cashflow_info = cutting_records(recordCursor['cashflows'],date1,date2)
+        
         return render_template("date_range_result.html", user_profile=user_profile, cashflow_info=cashflow_info)
     else:
         return "thanks"
+
+def cutting_records(cashflows,date1,date2):
+    copy = cashflows.copy()
+    for record in cashflows:
+            if(record['report_date']<date1 or record['report_date']>date2):
+                copy.remove(record)
+    return copy
 
 
 if __name__ == '__main__':
