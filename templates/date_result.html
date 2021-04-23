@@ -2,17 +2,18 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Results of {{user.ID}}</title>
+    <title>Results of User ID {{user.customer_id}} Sex: {{user.sex}} City: {{ user.city}} Constellation: {{user.constellation}} </title>
 </head>
 <body>
     <table class="table table-striped">
             <tr>
                 <th>Date</th>
+                
             </tr>
         
         {% for result in results%}
         <tr>
-            <td>{{result.Date}}</td>
+            <td>{{result.date}}</td>
         </tr>
         {% endfor %}
     </table>
