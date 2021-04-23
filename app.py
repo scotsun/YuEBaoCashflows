@@ -1,23 +1,13 @@
-from sshtunnel import SSHTunnelForwarder
-from flask import Flask, render_template, request, flash
+from flask import Flask, render_template, request, flash, redirect
 from flask_pymongo import PyMongo
 from pymongo import MongoClient
 from pymongo.errors import OperationFailure
-from pprint import pprint
+from ssh import *
 from forms import *
+from load_data_utils import cutting_records, generate_plot
 
 app = Flask(__name__)
 app.secret_key = 'csse433'
-tunnel = SSHTunnelForwarder(
-        "34.67.124.229",
-        ssh_username="apple",
-        ssh_pkey="/Users/apple/Desktop/CSSE433/project-cli-keys/key-instance-1",
-        ssh_private_key_password="csse433",
-        remote_bind_address=("127.0.0.1", 27017)
-    )
-tunnel.start()
-host = "localhost"
-port = tunnel.local_bind_port
 app.config['MONGO_URI'] = f'mongodb://{host}:{port}/yuebao'
 mongo = PyMongo(app)
 
@@ -43,7 +33,8 @@ def login():
         if not login_form.validate_on_submit():
             flash('miss info')
         if not check_login_info(username, password):
-            flash('incorrect username or password')
+            return "failed login; please log in"
+        return redirect("http://127.0.0.1:5000/search")
 
     return render_template('login.html', form=login_form)
 
@@ -52,23 +43,7 @@ def login():
 def search():
     search_form_date = SearchFormDate()
     search_form_date_range = SearchFormDateRange()
-    if request.method == 'POST':
-        # customer_id = request.form.get('customer_id')
-        # date = request.form.get('date')
-        #
-        # if search_form_date.validate_on_submit():
-        #     customer_id = int(customer_id)
-        #     date = int(date)
-        #
-        # print(customer_id, date)
-        # result = mongo.db.customer.find_one(
-        #     {'user_id': customer_id, 'cashflows.report_date': date},
-        #     {'user_id': 1, 'cashflows.$': 1, 'sex': 1, 'city': 1, 'constellation': 1, '_id': 0}
-        # )
-        # pprint(result)
-        return render_template('search.html', form1=search_form_date, form2=search_form_date_range)
-    else:
-        return "go back"
+    return render_template('search.html', form1=search_form_date, form2=search_form_date_range)
 
 
 @app.route('/date_result', methods=['GET', 'POST'])
@@ -80,10 +55,10 @@ def date_result():
             {'user_id': customer_id, 'cashflows.report_date': date},
             {'user_id': 1, 'cashflows.$': 1, 'sex': 1, 'city': 1, 'constellation': 1, '_id': 0}
         )
-
+        if record is None:
+            return "no record matched"
         profile_keys = ['user_id', 'sex', 'city', 'constellation']
         user_profile = {k: record.get(k) for k in profile_keys}
-
         cashflow_info = record['cashflows'][0]
         return render_template("date_result.html", user_profile=user_profile, cashflow_info=cashflow_info)
     else:
@@ -93,7 +68,22 @@ def date_result():
 @app.route('/date_range_result', methods=['GET', 'POST'])
 def date_range_result():
     if request.method == "POST":
-        return render_template("date_range_result.html")
+        customer_id = int(request.form.get('customer_id'))
+        date1 = int(request.form.get('date1'))
+        date2 = int(request.form.get('date2'))
+        record_cursor = mongo.db.customer.find_one(
+            {'user_id': customer_id},
+            {'user_id': 1, 'cashflows': 1, 'sex': 1, 'city': 1, 'constellation': 1, '_id': 0}
+        )
+        if record_cursor is None:
+            return "Found 0 record"
+        profile_keys = ['user_id', 'sex', 'city', 'constellation']
+        user_profile = {k: record_cursor.get(k) for k in profile_keys}
+        cashflow_info = cutting_records(record_cursor['cashflows'], date1, date2)
+        plot_data = generate_plot(cashflow_info)
+
+        return render_template("date_range_result.html", user_profile=user_profile, cashflow_info=cashflow_info,
+                               plot_data=plot_data)
     else:
         return "thanks"
 

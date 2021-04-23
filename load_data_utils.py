@@ -1,4 +1,8 @@
 import numpy as np
+import pandas as pd
+from matplotlib.figure import Figure
+from io import BytesIO
+import base64
 
 
 def generate_customer_dict(user_id, profile_tbl, cashflow_tbl):
@@ -50,3 +54,25 @@ def generate_cashflow_dict(row):
     cashflow_dict['purchase'] = purchase
     cashflow_dict['redemption'] = redemption
     return cashflow_dict
+
+
+# To slice records that are within range
+def cutting_records(cashflows, date1, date2):
+    copy = cashflows.copy()
+    for record in cashflows:
+        if record['report_date'] < date1 or record['report_date'] > date2:
+            copy.remove(record)
+    return copy
+
+
+def generate_plot(cashflows):  # TODO: need to modify the plot
+    plot_df = pd.DataFrame()
+    balance = [cashflow['balance']['tBalance'] for cashflow in cashflows]
+    plot_df['balance'] = balance
+    plot = Figure()
+    ax = plot.subplots()
+    plot_df.plot(ax=ax)
+    buf = BytesIO()
+    plot.savefig(buf, format='png')
+    data = base64.b64encode(buf.getbuffer()).decode('ascii')
+    return data
