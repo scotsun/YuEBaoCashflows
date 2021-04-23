@@ -3,6 +3,7 @@ from flask import Flask, render_template, request, flash
 from flask_pymongo import PyMongo
 from pymongo import MongoClient
 from pymongo.errors import OperationFailure
+from pprint import pprint
 from forms import *
 
 app = Flask(__name__)
@@ -54,11 +55,23 @@ def search():
     if request.method == 'POST':
         customer_id = request.form.get('customer_id')
         date = request.form.get('date')
-        print(customer_id, date)
+
         if not search_form_date.validate_on_submit():
             flash('miss info')
 
+        result = mongo.db.customers.find_one(
+            {'user_id': customer_id, 'cashflows.report_date': date},
+            {'user_id': 1, 'cashflows.$': 1, 'sex': 1, 'city': 1, 'constellation': 1, '_id': 0}
+        )
+        pprint(result)
+
     return render_template('search.html', form=search_form_date)
+
+
+@app.route('/date_result', methods=['GET'])
+def date_result():
+
+    return
 
 
 if __name__ == '__main__':
