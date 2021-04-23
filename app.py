@@ -1,11 +1,9 @@
 from sshtunnel import SSHTunnelForwarder
 from flask import Flask, render_template, request, flash
-from flask_wtf import FlaskForm
 from flask_pymongo import PyMongo
-from wtforms import StringField, PasswordField, SubmitField
-from wtforms.validators import DataRequired
 from pymongo import MongoClient
 from pymongo.errors import OperationFailure
+from forms import *
 
 app = Flask(__name__)
 app.secret_key = 'csse433'
@@ -23,8 +21,8 @@ app.config['MONGO_URI'] = f'mongodb://{host}:{port}/?authSource=admin'
 mongo = PyMongo(app)
 
 
-# use connect to mongodb
-def check_login_info(username, password):  # TODO: connect to mongodb
+# use check if user has the admin to db
+def check_login_info(username, password):  # DONE: connect to mongodb
     try:
         cli = MongoClient(f'mongodb://{username}:{password}@{host}:{port}/?authSource=admin')
         cli.server_info()
@@ -34,28 +32,33 @@ def check_login_info(username, password):  # TODO: connect to mongodb
         return False
 
 
-class LoginForm(FlaskForm):
-    username = StringField('Username:', validators=[DataRequired()])
-    password = PasswordField('Password: ', validators=[DataRequired()])
-    submit = SubmitField('Submit')
-
-
 @app.route('/', methods=['GET', 'POST'])
 def login():
     login_form = LoginForm()
-
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
 
         if not login_form.validate_on_submit():
             flash('miss info')
-        elif not check_login_info(username, password):
+        if not check_login_info(username, password):
             flash('incorrect username or password')
-        else:
-            return 'success'
 
     return render_template('login.html', form=login_form)
+
+
+@app.route('/search', methods=['GET', 'POST'])
+def search():
+    search_form_date = SearchFormDate()
+
+    if request.method == 'POST':
+        customer_id = request.form.get('customer_id')
+        date = request.form.get('date')
+        print(customer_id, date)
+        if not search_form_date.validate_on_submit():
+            flash('miss info')
+
+    return render_template('search.html', form=search_form_date)
 
 
 if __name__ == '__main__':

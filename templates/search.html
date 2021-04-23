@@ -6,5 +6,15 @@
 </head>
 <body>
 <h3>Search for customer information</h3>
+<hr>
+<form method="post">
+    {{ form.csrf_token() }}
+    {{ form.customer_id.label }}&nbsp;{{ form.customer_id }}&nbsp;&nbsp;
+    {{ form.date.label }}&nbsp;{{ form.date }}&nbsp;&nbsp;
+    {{ form.search }}
+    {% for message in get_flashed_messages() %}
+        {{ message }}
+    {% endfor %}
+</form>
 </body>
 </html>
