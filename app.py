@@ -110,6 +110,7 @@ def date_range_result():
     else:
         return "thanks"
 
+#To slice records that are within range
 def cutting_records(cashflows,date1,date2):
     copy = cashflows.copy()
     for record in cashflows:
