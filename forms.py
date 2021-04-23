@@ -14,3 +14,10 @@ class SearchFormDate(FlaskForm):
     fromDate = StringField('From Date:', validators=[DataRequired()])
     toDate = StringField('To Date:', validators=[DataRequired()])
     search = SubmitField('Search')
+
+
+class SearchFormDateRange(FlaskForm):
+    customer_id = StringField('Customer ID:', validators=[DataRequired()])
+    date1 = StringField('Date lower bound:', validators=[DataRequired()])
+    date2 = StringField('Date upper bound:', validators=[DataRequired()])
+    search = SubmitField('Search')

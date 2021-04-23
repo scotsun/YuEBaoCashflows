@@ -7,14 +7,25 @@
 <body>
 <h3>Search for customer information</h3>
 <hr>
-<form method="post">
-    {{ form.csrf_token() }}
-    {{ form.customer_id.label }}&nbsp;{{ form.customer_id }}&nbsp;&nbsp;
-    {{ form.date.label }}&nbsp;{{ form.date }}&nbsp;&nbsp;
-    {{ form.search }}
-    {% for message in get_flashed_messages() %}
-        {{ message }}
-    {% endfor %}
-</form>
+    <form action="http://127.0.0.1:5000/date_result" method="post">
+        {{ form1.csrf_token() }}
+        {{ form1.customer_id.label }}&nbsp;{{ form1.customer_id }}&nbsp;&nbsp;
+        {{ form1.date.label }}&nbsp;{{ form1.date }}&nbsp;&nbsp;
+        {{ form1.search }}
+        {% for message in get_flashed_messages() %}
+            {{ message }}
+        {% endfor %}
+    </form>
+<hr>
+    <form action="http://127.0.0.1:5000/date_range_result" method="post">
+        {{ form2.csrf_token() }}
+        {{ form2.customer_id.label }}&nbsp;{{ form2.customer_id }}&nbsp;&nbsp;
+        {{ form2.date1.label }}&nbsp;{{ form2.date1 }}&nbsp;&nbsp;
+        {{ form2.date2.label }}&nbsp;{{ form2.date2 }}<br>
+        {{ form2.search }}
+        {% for message in get_flashed_messages() %}
+            {{ message }}
+        {% endfor %}
+    </form>
 </body>
 </html>

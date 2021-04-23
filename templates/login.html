@@ -7,15 +7,15 @@
 <body>
 <h3>Consultant Login</h3>
 <hr>
-<form action="http://127.0.0.1:5000/search" method="post">
-    {{ form.csrf_token() }}
-    {{ form.username.label }}&nbsp;{{ form.username }} <br>
-    {{ form.password.label }}&nbsp;{{ form.password }} <br>
-    {{ form.submit }}
-    {% for message in get_flashed_messages() %}
-        {{ message }}
-    {% endfor %}
-</form>
+    <form action="http://127.0.0.1:5000/search" method="post">
+        {{ form.csrf_token() }}
+        {{ form.username.label }}&nbsp;{{ form.username }} <br>
+        {{ form.password.label }}&nbsp;{{ form.password }} <br>
+        {{ form.submit }}
+        {% for message in get_flashed_messages() %}
+            {{ message }}
+        {% endfor %}
+    </form>
 <hr>
 </body>
 </html>

@@ -18,7 +18,7 @@ tunnel = SSHTunnelForwarder(
 tunnel.start()
 host = "localhost"
 port = tunnel.local_bind_port
-app.config['MONGO_URI'] = f'mongodb://{host}:{port}/?authSource=admin'
+app.config['MONGO_URI'] = f'mongodb://{host}:{port}/yuebao'
 mongo = PyMongo(app)
 
 
@@ -51,27 +51,51 @@ def login():
 @app.route('/search', methods=['GET', 'POST'])
 def search():
     search_form_date = SearchFormDate()
-
+    search_form_date_range = SearchFormDateRange()
     if request.method == 'POST':
-        customer_id = request.form.get('customer_id')
-        fromDate = request.form.get('fromDate')
-        toDate = request.form.get('toDate')
-        if not search_form_date.validate_on_submit():
-            flash('miss info')
+        # customer_id = request.form.get('customer_id')
+        # date = request.form.get('date')
+        #
+        # if search_form_date.validate_on_submit():
+        #     customer_id = int(customer_id)
+        #     date = int(date)
+        #
+        # print(customer_id, date)
+        # result = mongo.db.customer.find_one(
+        #     {'user_id': customer_id, 'cashflows.report_date': date},
+        #     {'user_id': 1, 'cashflows.$': 1, 'sex': 1, 'city': 1, 'constellation': 1, '_id': 0}
+        # )
+        # pprint(result)
+        return render_template('search.html', form1=search_form_date, form2=search_form_date_range)
+    else:
+        return "go back"
 
-        result = mongo.db.customers.find_one(
-            {'user_id': customer_id, 'cashflows.report_date': {"$gte":fromDate, "$lte": toDate}},
+
+@app.route('/date_result', methods=['GET', 'POST'])
+def date_result():
+    if request.method == 'POST':
+        customer_id = int(request.form.get('customer_id'))
+        date = int(request.form.get('date'))
+        record = mongo.db.customer.find_one(
+            {'user_id': customer_id, 'cashflows.report_date': date},
             {'user_id': 1, 'cashflows.$': 1, 'sex': 1, 'city': 1, 'constellation': 1, '_id': 0}
         )
-        pprint(result)
 
-    return render_template('search.html', form=search_form_date)
+        profile_keys = ['user_id', 'sex', 'city', 'constellation']
+        user_profile = {k: record.get(k) for k in profile_keys}
+
+        cashflow_info = record['cashflows'][0]
+        return render_template("date_result.html", user_profile=user_profile, cashflow_info=cashflow_info)
+    else:
+        return "go back"
 
 
-@app.route('/date_result', methods=['GET'])
-def date_result():
-
-    return
+@app.route('/date_range_result', methods=['GET', 'POST'])
+def date_range_result():
+    if request.method == "POST":
+        return render_template("date_range_result.html")
+    else:
+        return "thanks"
 
 
 if __name__ == '__main__':

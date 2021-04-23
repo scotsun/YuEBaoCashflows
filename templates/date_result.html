@@ -2,19 +2,26 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Results of User ID {{user.customer_id}} Sex: {{user.sex}} City: {{ user.city}} Constellation: {{user.constellation}} </title>
+    <title>Results of User ID: {{ user_profile.user_id }}</title>
 </head>
 <body>
-    <table class="table table-striped">
+<h3>User Single Date Search Result</h3>
+<hr>
+    <table border="1">
+        {% for key, value in user_profile.items() %}
             <tr>
-                <th>Date</th>
-                
+                <th>{{ key }}</th>
+                <td>{{ value }}</td>
             </tr>
-        
-        {% for result in results%}
-        <tr>
-            <td>{{result.date}}</td>
-        </tr>
+        {% endfor %}
+    </table>
+<hr>
+    <table border="1">
+        {% for key, value in cashflow_info.items() %}
+            <tr>
+                <th>{{ key }}</th>
+                <td>{{ value }}</td>
+            </tr>
         {% endfor %}
     </table>
 </body>
