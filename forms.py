@@ -12,7 +12,7 @@ class LoginForm(FlaskForm):
 class SearchFormDate(FlaskForm):
     customer_id = StringField('Customer ID:', validators=[DataRequired()])
     fromDate = StringField('From Date:', validators=[DataRequired()])
-    toDate = StringField('To Date:', validators=[DataRequired()])
+    date = StringField('To Date:', validators=[DataRequired()])
     search = SubmitField('Search')
 
 

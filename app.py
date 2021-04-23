@@ -10,9 +10,9 @@ app = Flask(__name__)
 app.secret_key = 'csse433'
 tunnel = SSHTunnelForwarder(
         "34.67.124.229",
-        ssh_username="apple",
-        ssh_pkey="/Users/apple/Desktop/CSSE433/project-cli-keys/key-instance-1",
-        ssh_private_key_password="csse433",
+        ssh_username="sfeng",
+        ssh_pkey="~/.ssh/id_rsa.pub",
+        ssh_private_key_password="",
         remote_bind_address=("127.0.0.1", 27017)
     )
 tunnel.start()
@@ -52,7 +52,7 @@ def login():
 def search():
     search_form_date = SearchFormDate()
     search_form_date_range = SearchFormDateRange()
-    if request.method == 'POST':
+    if request.method == 'POST' or request.method == 'GET':
         # customer_id = request.form.get('customer_id')
         # date = request.form.get('date')
         #
@@ -93,7 +93,17 @@ def date_result():
 @app.route('/date_range_result', methods=['GET', 'POST'])
 def date_range_result():
     if request.method == "POST":
-        return render_template("date_range_result.html")
+        customer_id = int(request.form.get('customer_id'))
+        date1 = int(request.form.get('date1'))
+        date2 = int(request.form.get('date2'))
+        recordCursor = mongo.db.customer.find_one(
+            {'user_id': customer_id, 'cashflows.report_date': {'$gte':date1, '$lte':date2}},
+            {'user_id': 1, 'cashflows': 1, 'sex': 1, 'city': 1, 'constellation': 1, '_id': 0}
+        )
+        profile_keys = ['user_id', 'sex', 'city', 'constellation']
+        user_profile = {k: recordCursor.get(k) for k in profile_keys}
+        cashflow_info = recordCursor['cashflows']
+        return render_template("date_range_result.html", user_profile=user_profile, cashflow_info=cashflow_info)
     else:
         return "thanks"
 

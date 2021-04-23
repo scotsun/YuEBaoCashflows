@@ -2,9 +2,28 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Date Range Result</title>
+    <title>Results of User ID: {{ user_profile.user_id }}</title>
 </head>
 <body>
 <h3>User Date Range Results</h3>
+<hr>
+	<table border="1">
+        {% for key, value in user_profile.items() %}
+            <tr>
+                <th>{{ key }}</th>
+                <td>{{ value }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+<hr>{% for item in cashflow_info %}
+	<table border="1">
+        {% for key, value in item.items() %}
+            <tr>
+                <th>{{ key }}</th>
+                <td>{{ value }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+    {% endfor %}
 </body>
 </html>
