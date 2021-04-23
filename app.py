@@ -5,6 +5,11 @@ from pymongo import MongoClient
 from pymongo.errors import OperationFailure
 from pprint import pprint
 from forms import *
+import pandas as pd
+import base64
+from io import BytesIO
+from matplotlib.figure import Figure
+
 
 app = Flask(__name__)
 app.secret_key = 'csse433'
@@ -105,18 +110,34 @@ def date_range_result():
         profile_keys = ['user_id', 'sex', 'city', 'constellation']
         user_profile = {k: recordCursor.get(k) for k in profile_keys}
         cashflow_info = cutting_records(recordCursor['cashflows'],date1,date2)
+        plot_data = generate_plot(cashflow_info)
         
-        return render_template("date_range_result.html", user_profile=user_profile, cashflow_info=cashflow_info)
+        return render_template("date_range_result.html", user_profile=user_profile, cashflow_info=cashflow_info,
+                               plot_data=plot_data)
     else:
         return "thanks"
 
-#To slice records that are within range
+
+# To slice records that are within range
 def cutting_records(cashflows,date1,date2):
     copy = cashflows.copy()
     for record in cashflows:
             if(record['report_date']<date1 or record['report_date']>date2):
                 copy.remove(record)
     return copy
+
+
+def generate_plot(cashflows):
+    plot_df = pd.DataFrame()
+    balance = [cashflow['balance']['tBalance'] for cashflow in cashflows]
+    plot_df['balance'] = balance
+    plot = Figure()
+    ax = plot.subplots()
+    plot_df.plot(ax=ax)
+    buf = BytesIO()
+    plot.savefig(buf, format='png')
+    data = base64.b64encode(buf.getbuffer()).decode('ascii')
+    return data
 
 
 if __name__ == '__main__':
