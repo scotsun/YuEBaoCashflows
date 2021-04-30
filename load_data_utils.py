@@ -65,13 +65,22 @@ def cutting_records(cashflows, date1, date2):
     return copy
 
 
-def generate_plot(cashflows):  # TODO: need to modify the plot
-    plot_df = pd.DataFrame()
+def generate_dataframe(cashflows):
+    cashflow_df = pd.DataFrame()
     balance = [cashflow['balance']['tBalance'] for cashflow in cashflows]
-    plot_df['balance'] = balance
+    dates = [cashflow['report_date'] for cashflow in cashflows]
+    dates = pd.to_datetime(dates, format='%Y%m%d')
+    cashflow_df['balance'] = balance
+    cashflow_df = cashflow_df.set_index(pd.Index(dates))
+    cashflow_df = cashflow_df.sort_index()
+    return cashflow_df
+
+
+def generate_plot(cashflows):  # TODO: need to modify the plot
+    cashflow_df = generate_dataframe(cashflows)
     plot = Figure()
     ax = plot.subplots()
-    plot_df.plot(ax=ax)
+    cashflow_df.plot(ax=ax)
     buf = BytesIO()
     plot.savefig(buf, format='png')
     data = base64.b64encode(buf.getbuffer()).decode('ascii')

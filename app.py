@@ -34,6 +34,7 @@ def login():
             flash('miss info')
         if not check_login_info(username, password):
             return "failed login; please log in"
+
         return redirect("http://127.0.0.1:5000/search")
 
     return render_template('login.html', form=login_form)
