@@ -1,0 +1,69 @@
+{% extends "base.html"%} {% block title %}Search{% endblock %}
+
+{% block content %}
+<form action="{{url_for('views.date_result')}}" method="POST">
+    <input type="hidden" name="form_type" value="single">
+    <h3 align="center">Search for customer information on a single date</h3>
+    <div class="form-group">
+        <label for="customer_id1">Customer ID</label>
+        <input type="text" class="form-control" name="customer_id1" id="customer_id1" placeholder="Enter customer ID">
+    </div>
+    <div class="form-group">
+        <label for="date">Date</label>
+        <input type="text" class="form-control" name="date" id="date" placeholder="Enter date">
+    </div>
+    <br/>
+    <button type="submit" id="button1" class="btn btn-primary">Submit</button>
+</form> 
+<br/>
+<form action="{{url_for('views.date_range_result')}}" method="POST">
+    <input type="hidden" name="form_type" value="range">
+    <h3 align="center">Search for customer information on a date range</h3>
+    <div class="form-group">
+        <label for="customer_id2">Customer ID</label>
+        <input type="text" class="form-control" name="customer_id2" id="customer_id2" placeholder="Enter customer ID">
+    </div>
+    <div class="form-group">
+        <label for="date1">From date</label>
+        <input type="text" class="form-control" name="date1" id="date1" placeholder="Enter starting date">
+    </div>
+    <div class="form-group">
+        <label for="date2">To date</label>
+        <input type="text" class="form-control" name="date2" id="date2" placeholder="Enter ending date">
+    </div>
+    <br/>
+    <button type="submit" id="button2" class="btn btn-primary">Submit</button>
+</form> 
+{% endblock %}
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>search page</title>
+</head>
+<body>
+<h3>Search for customer information</h3>
+<hr>
+    <form action="http://127.0.0.1:5000/date_result" method="post">
+        {{ form1.csrf_token() }}
+        {{ form1.customer_id.label }}&nbsp;{{ form1.customer_id }}&nbsp;&nbsp;
+        {{ form1.date.label }}&nbsp;{{ form1.date }}&nbsp;&nbsp;
+        {{ form1.search }}
+        {% for message in get_flashed_messages() %}
+            {{ message }}
+        {% endfor %}
+    </form>
+<hr>
+    <form action="http://127.0.0.1:5000/date_range_result" method="post">
+        {{ form2.csrf_token() }}
+        {{ form2.customer_id.label }}&nbsp;{{ form2.customer_id }}&nbsp;&nbsp;
+        {{ form2.date1.label }}&nbsp;{{ form2.date1 }}&nbsp;&nbsp;
+        {{ form2.date2.label }}&nbsp;{{ form2.date2 }}<br>
+        {{ form2.search }}
+        {% for message in get_flashed_messages() %}
+            {{ message }}
+        {% endfor %}
+    </form>
+</body>
+</html> -->

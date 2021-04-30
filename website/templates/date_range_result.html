@@ -1,0 +1,57 @@
+{% extends "base.html"%} {% block title %}Login{% endblock %}
+{% block content %}
+<br/>
+<h1>Results of User ID: {{ user_profile.user_id }} </h1>
+<img src="data:image/png;base64, {{ plot_data }}" class="mx-auto d-block" alt=""/>
+<table class="table table-dark table-striped">
+    {% for key, value in user_profile.items() %}
+    <tr>
+        <th>{{ key }}</th>
+        <td>{{ value }}</td>
+    </tr>
+    {% endfor %}
+</table>
+<br/>
+{% for item in cashflow_info %}
+<table class="table table-dark table-hover">
+    {% for key, value in item.items() %}
+    <tr>
+        <th>{{ key }}</th>
+        <td>{{ value }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endfor %}
+{% endblock %}
+
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Results of User ID: {{ user_profile.user_id }}</title>
+</head>
+<body>
+<h3>User Date Range Results</h3>
+<img src="data:image/png;base64, {{ plot_data }}"  alt=""/>
+<hr>
+	<table border="1">
+        {% for key, value in user_profile.items() %}
+            <tr>
+                <th>{{ key }}</th>
+                <td>{{ value }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+<hr>{% for item in cashflow_info %}
+	<table border="1">
+        {% for key, value in item.items() %}
+            <tr>
+                <th>{{ key }}</th>
+                <td>{{ value }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+    {% endfor %}
+</body>
+</html> -->
