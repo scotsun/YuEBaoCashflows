@@ -27,5 +27,13 @@
             {{ message }}
         {% endfor %}
     </form>
+<hr>
+    <form action="http://127.0.0.1:5000/customer_result" method="post">
+        {{ form3.csrf_token() }}
+        {{ form3.city.label }}&nbsp;{{ form3.city }}&nbsp;&nbsp;
+        {{ form3.constellation.label }}&nbsp;{{ form3.constellation }}&nbsp;&nbsp;
+        {{ form3.sex.label }}&nbsp;{{ form3.sex }}<br>
+        {{ form3.search }}
+    </form>
 </body>
 </html>

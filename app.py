@@ -45,7 +45,40 @@ def login():
 def search():
     search_form_date = SearchFormDate()
     search_form_date_range = SearchFormDateRange()
-    return render_template('search.html', form1=search_form_date, form2=search_form_date_range)
+    search_customer_key_word = SearchCustomerFormKeyWord()
+    return render_template('search.html', form1=search_form_date,
+                           form2=search_form_date_range, form3=search_customer_key_word)
+
+
+@app.route('/customer_result', methods=['GET', 'POST'])
+def customer_result():
+    if request.method == 'POST':
+        city = request.form.get('city')
+        constellation = request.form.get('constellation')
+        sex = request.form.get('sex')
+
+        # TODO: need to check for all inputs' validity
+        if sex != '':
+            try:
+                sex = int(sex)
+            except ValueError:
+                pass
+
+        query = {}
+        if city != '':
+            query['city'] = city
+        if constellation != '':
+            query['constellation'] = constellation
+        if sex != '':
+            query['sex'] = sex
+
+        print(query)
+
+        customer_records = list(mongo.db.customer.find(query, {'cashflows': 0, '_id': 0}))
+        num_customer_records = len(customer_records)
+        return render_template("customer_result.html", num_customer_records=num_customer_records,
+                               customer_records=customer_records)
+    return "please go back"
 
 
 @app.route('/date_result', methods=['GET', 'POST'])

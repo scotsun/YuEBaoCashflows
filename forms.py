@@ -9,6 +9,13 @@ class LoginForm(FlaskForm):
     submit = SubmitField('Submit')
 
 
+class SearchCustomerFormKeyWord(FlaskForm):
+    city = StringField('City:')
+    constellation = StringField('Constellation:')
+    sex = StringField('Sex:')
+    search = SubmitField('Search')
+
+
 class SearchFormDate(FlaskForm):
     customer_id = StringField('Customer ID:', validators=[DataRequired()])
     date = StringField('date:', validators=[DataRequired()])

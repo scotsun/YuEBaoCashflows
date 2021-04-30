@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Find Customer: {{ num_customer_records }}</title>
+</head>
+<body>
+<h3>Customer Search</h3>
+<hr>
+
+{% for item in customer_records %}
+	<table border="1">
+        {% for key, value in item.items() %}
+            <tr>
+                <th>{{ key }}</th>
+                <td>{{ value }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+    <br>
+    {% endfor %}
+
+</body>
+</html>
