@@ -8,6 +8,12 @@
 <h3>User Date Range Results</h3>
 <img src="data:image/png;base64, {{ plot_data }}"  alt=""/>
 <hr>
+    <form action="http://127.0.0.1:5000/forecast_result" method="post">
+        {{ forecast_form.csrf_token() }}
+        {{ forecast_form.num_future_steps.label }}&nbsp;{{ forecast_form.num_future_steps }}&nbsp;&nbsp;&nbsp;
+        {{ forecast_form.forecast }}
+    </form>
+<hr>
 	<table border="1">
         {% for key, value in user_profile.items() %}
             <tr>

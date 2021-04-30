@@ -1,9 +1,10 @@
-from flask import Flask, render_template, request, flash, redirect
+from flask import Flask, render_template, request, flash, redirect, session
 from flask_pymongo import PyMongo
 from pymongo import MongoClient
 from pymongo.errors import OperationFailure
 from ssh import *
 from forms import *
+from forecasting import *
 from load_data_utils import cutting_records, generate_plot
 
 app = Flask(__name__)
@@ -83,11 +84,32 @@ def date_range_result():
         cashflow_info = cutting_records(record_cursor['cashflows'], date1, date2)
         plot_data = generate_plot(cashflow_info)
 
-        return render_template("date_range_result.html", user_profile=user_profile, cashflow_info=cashflow_info,
+        forecast_form = ForecastForm()
+        session['customer_id'] = customer_id
+        session['overall_cashflow_info'] = record_cursor['cashflows']
+        return render_template("date_range_result.html", forecast_form=forecast_form,
+                               user_profile=user_profile, cashflow_info=cashflow_info,
                                plot_data=plot_data)
     else:
         return "thanks"
 
+
+@app.route('/forecast_result', methods=['GET', 'POST'])
+def forecast_result():
+    if request.method == 'POST':
+        customer_id = session.get('customer_id', None)
+        overall_cashflow_info = session.get('overall_cashflow_info', None)
+
+        if len(overall_cashflow_info) <= 15:
+            return "less than 15 days of record; we cannot forecast"
+
+        num_future_dates = int(request.form.get('num_future_steps'))
+        forecast_plot_data = auto_arima_forecasting(overall_cashflow_info, num_future_dates)
+
+        return render_template("forecast_result.html", customer_id_id=customer_id,
+                               num_future_dates=num_future_dates, forecast_plot_data=forecast_plot_data)
+    else:
+        return "please go back"
 
 if __name__ == '__main__':
     app.run(debug=True)

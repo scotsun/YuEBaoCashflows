@@ -12,13 +12,13 @@ import base64
 from load_data_utils import generate_dataframe
 
 
-def auto_arima_forecasting(cashflows, num_future_steps):
+def auto_arima_forecasting(cashflows, num_future_dates):
     cashflows_df = generate_dataframe(cashflows) # TODO: only balance now
     arima_model = pm.auto_arima(cashflows_df, seasonal=False)
-    forecasts = arima_model.predict(num_future_steps)
+    forecasts = arima_model.predict(num_future_dates)
 
     last_train_date = cashflows_df.index[-1]
-    future_dates = [last_train_date + timedelta(days=i) for i in range(1, 1 + num_future_steps)]
+    future_dates = [last_train_date + timedelta(days=i) for i in range(1, 1 + num_future_dates)]
 
     output_plot = Figure()
     output_plot_ax = output_plot.subplots()

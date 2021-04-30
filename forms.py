@@ -20,3 +20,8 @@ class SearchFormDateRange(FlaskForm):
     date1 = StringField('Date lower bound:', validators=[DataRequired()])
     date2 = StringField('Date upper bound:', validators=[DataRequired()])
     search = SubmitField('Search')
+
+
+class ForecastForm(FlaskForm):
+    num_future_steps = StringField('Number of future dates:', validators=[DataRequired()])
+    forecast = SubmitField('Forecast')
