@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, request, session
+from flask_login import login_required, current_user
 from . import mongo
 from .forecasting import *
 from .load_data_utils import cutting_records, generate_plot
@@ -7,16 +8,19 @@ views = Blueprint('views',__name__)
 
 
 @views.route('/')
+@login_required
 def home():
 	return render_template("home.html")
 
 
 @views.route('/search',methods=['GET','POST'])
+@login_required
 def search():	
 	return render_template("search.html")
 
 
 @views.route('/date_result',methods=['POST'])
+@login_required
 def date_result():
 	if request.method == 'POST':
 		customer_id = int(request.form.get('customer_id1'))
@@ -34,6 +38,7 @@ def date_result():
 
 
 @views.route('/date_range_result',methods=['GET','POST'])
+@login_required
 def date_range_result():
 	if request.method == "POST":
 		customer_id = int(request.form.get('customer_id2'))
@@ -55,6 +60,7 @@ def date_range_result():
 		return "WTF"
 
 @views.route('/customer_result',methods=['POST'])
+@login_required
 def customer_result():
 	if request.method == 'POST':
 		city = request.form.get('city_label')
@@ -87,6 +93,7 @@ def customer_result():
 
 
 @views.route('/forecast_result', methods=['POST'])
+@login_required
 def forecast_result():
 	if request.method == 'POST':
 		customer_id = session.get('customer_id', None)
