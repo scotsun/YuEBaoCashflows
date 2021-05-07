@@ -34,36 +34,24 @@
     <br/>
     <button type="submit" id="button2" class="btn btn-primary">Submit</button>
 </form> 
+<br/>
+<form action="{{url_for('views.customer_result')}}" method="POST">
+    <input type="hidden" name="form_type" value="range">
+    <h3 align="center">Search for customer information of a specific group</h3>
+    <div class="form-group">
+        <label for="city_label">City</label>
+        <input type="text" class="form-control" name="city_label" id="city_label" placeholder="Enter city name">
+    </div>
+    <div class="form-group">
+        <label for="constellation_label">Constellation</label>
+        <input type="text" class="form-control" name="constellation_label" id="constellation_label" placeholder="Enter consteallation">
+    </div>
+    <div class="form-group">
+        <label for="sex">Sex</label>
+        <input type="text" class="form-control" name="sex" id="sex" placeholder="Enter sex">
+    </div>
+    <br/>
+    <button type="submit" id="button3" class="btn btn-primary">Submit</button>
+</form> 
 {% endblock %}
 
-<!-- <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>search page</title>
-</head>
-<body>
-<h3>Search for customer information</h3>
-<hr>
-    <form action="http://127.0.0.1:5000/date_result" method="post">
-        {{ form1.csrf_token() }}
-        {{ form1.customer_id.label }}&nbsp;{{ form1.customer_id }}&nbsp;&nbsp;
-        {{ form1.date.label }}&nbsp;{{ form1.date }}&nbsp;&nbsp;
-        {{ form1.search }}
-        {% for message in get_flashed_messages() %}
-            {{ message }}
-        {% endfor %}
-    </form>
-<hr>
-    <form action="http://127.0.0.1:5000/date_range_result" method="post">
-        {{ form2.csrf_token() }}
-        {{ form2.customer_id.label }}&nbsp;{{ form2.customer_id }}&nbsp;&nbsp;
-        {{ form2.date1.label }}&nbsp;{{ form2.date1 }}&nbsp;&nbsp;
-        {{ form2.date2.label }}&nbsp;{{ form2.date2 }}<br>
-        {{ form2.search }}
-        {% for message in get_flashed_messages() %}
-            {{ message }}
-        {% endfor %}
-    </form>
-</body>
-</html> -->

@@ -1,4 +1,8 @@
 import numpy as np
+import pandas as pd
+import base64
+from io import BytesIO
+from matplotlib.figure import Figure
 
 
 def generate_customer_dict(user_id, profile_tbl, cashflow_tbl):
@@ -50,3 +54,34 @@ def generate_cashflow_dict(row):
     cashflow_dict['purchase'] = purchase
     cashflow_dict['redemption'] = redemption
     return cashflow_dict
+
+
+def cutting_records(cashflows,date1,date2):
+    copy = cashflows.copy()
+    for record in cashflows:
+            if(record['report_date']<date1 or record['report_date']>date2):
+                copy.remove(record)
+    return copy
+
+
+def generate_plot(cashflows):
+    plot_df = pd.DataFrame()
+    balance = [cashflow['balance']['tBalance'] for cashflow in cashflows]
+    plot_df['balance'] = balance
+    plot = Figure()
+    ax = plot.subplots()
+    plot_df.plot(ax=ax)
+    buf = BytesIO()
+    plot.savefig(buf, format='png')
+    data = base64.b64encode(buf.getbuffer()).decode('ascii')
+    return data
+
+def generate_dataframe(cashflows):
+    cashflow_df = pd.DataFrame()
+    balance = [cashflow['balance']['tBalance'] for cashflow in cashflows]
+    dates = [cashflow['report_date'] for cashflow in cashflows]
+    dates = pd.to_datetime(dates, format='%Y%m%d')
+    cashflow_df['balance'] = balance
+    cashflow_df = cashflow_df.set_index(pd.Index(dates))
+    cashflow_df = cashflow_df.sort_index()
+    return cashflow_df

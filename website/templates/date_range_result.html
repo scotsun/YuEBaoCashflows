@@ -1,8 +1,17 @@
-{% extends "base.html"%} {% block title %}Login{% endblock %}
+{% extends "base.html"%} {% block title %}Range Result{% endblock %}
 {% block content %}
 <br/>
 <h1>Results of User ID: {{ user_profile.user_id }} </h1>
 <img src="data:image/png;base64, {{ plot_data }}" class="mx-auto d-block" alt=""/>
+<br/>
+<form action="{{url_for('views.forecast_result')}}" method="POST">
+    <div class="form-group">
+        <label for="num_future_steps">Number of dates</label>
+        <input type="text" class="form-control" name="num_future_steps" id="num_future_steps" placeholder="Enter number of dates">
+    </div>
+    <button type="submit" id="button3" class="btn btn-primary">Forecast</button>
+</form>
+
 <table class="table table-dark table-striped">
     {% for key, value in user_profile.items() %}
     <tr>
@@ -25,33 +34,3 @@
 {% endblock %}
 
 
-<!-- <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Results of User ID: {{ user_profile.user_id }}</title>
-</head>
-<body>
-<h3>User Date Range Results</h3>
-<img src="data:image/png;base64, {{ plot_data }}"  alt=""/>
-<hr>
-	<table border="1">
-        {% for key, value in user_profile.items() %}
-            <tr>
-                <th>{{ key }}</th>
-                <td>{{ value }}</td>
-            </tr>
-        {% endfor %}
-    </table>
-<hr>{% for item in cashflow_info %}
-	<table border="1">
-        {% for key, value in item.items() %}
-            <tr>
-                <th>{{ key }}</th>
-                <td>{{ value }}</td>
-            </tr>
-        {% endfor %}
-    </table>
-    {% endfor %}
-</body>
-</html> -->
