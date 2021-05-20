@@ -2,8 +2,16 @@
 {% block content %}
 <br/>
 <h1>Forecast result for user {{ customer_id }} for {{num_future_dates}} days.</h1>
-<body>
+    <h4>Automatically selected ARIMA model order {{ arima_order }}</h4>
+    <hr>
+    <body>
     <img src="data:image/png;base64, {{ forecast_plot_data }}" class="mx-auto d-block" alt=""/>
-</body>
+    </body>
+    <body>
+    <img src="data:image/png;base64, {{ acf_plot_data }}" class="mx-auto d-block" alt=""/>
+    </body>
+    <body>
+    <img src="data:image/png;base64, {{ pacf_plot_data }}" class="mx-auto d-block" alt=""/>
+    </body>
 {% endblock %}
 

@@ -56,32 +56,28 @@ def generate_cashflow_dict(row):
     return cashflow_dict
 
 
-def cutting_records(cashflows,date1,date2):
-    copy = cashflows.copy()
-    for record in cashflows:
-            if(record['report_date']<date1 or record['report_date']>date2):
-                copy.remove(record)
-    return copy
-
-
-def generate_plot(cashflows):
-    plot_df = pd.DataFrame()
-    balance = [cashflow['balance']['tBalance'] for cashflow in cashflows]
-    plot_df['balance'] = balance
+def generate_plot(df):
     plot = Figure()
     ax = plot.subplots()
-    plot_df.plot(ax=ax)
+    df.plot(ax=ax)
+    ax.legend(['balance', 'daily inflow', 'daily output'])
+    ax.set_xlabel('date')
+    ax.set_ylabel('CNY (0.01)')
     buf = BytesIO()
     plot.savefig(buf, format='png')
     data = base64.b64encode(buf.getbuffer()).decode('ascii')
     return data
 
-def generate_dataframe(cashflows):
-    cashflow_df = pd.DataFrame()
-    balance = [cashflow['balance']['tBalance'] for cashflow in cashflows]
-    dates = [cashflow['report_date'] for cashflow in cashflows]
-    dates = pd.to_datetime(dates, format='%Y%m%d')
-    cashflow_df['balance'] = balance
-    cashflow_df = cashflow_df.set_index(pd.Index(dates))
-    cashflow_df = cashflow_df.sort_index()
-    return cashflow_df
+
+def get_group_mean_result(cashflow_info):
+    cashflow_df = pd.DataFrame(cashflow_info)
+    group_mean_result = cashflow_df.groupby('report_date').mean()
+    group_mean_result = group_mean_result.set_index(pd.to_datetime(group_mean_result.index, format="%Y%m%d"))
+    return group_mean_result
+
+
+def generate_dataframe(cashflow_info):
+    cashflow_df = pd.DataFrame(cashflow_info)
+    cashflow_df['report_date'] = pd.to_datetime(cashflow_df['report_date'], format="%Y%m%d")
+    output_df = cashflow_df.set_index('report_date', drop=True)
+    return output_df
