@@ -141,7 +141,7 @@ def crud_analytics_report():
             if elem:
                 customer_properties.append(elem)
         report_prime_key = {'user_id': customer_id,
-                            'report_date': report_date}
+                            'report_date': new_report_date}
         mongo.db.appUser.update({'username': auth_username}, {"$addToSet": {"reports": report_prime_key}})
         cql = f"""
                     insert into analytics_report (user_id, report_date, end_date, num_fdays, property, start_date)
