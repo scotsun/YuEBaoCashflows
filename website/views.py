@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, session, redirect
+from flask import Blueprint, render_template, request, session, redirect, flash
 from . import mongo
 from . import cassandra
 from .forecasting import *
@@ -55,7 +55,8 @@ def date_range_result():
         """
         cashflow_info = list(cassandra.execute(cql))
         if not cashflow_info:
-            return "no cashflow info yet"
+            flash("no cashflow info yet", category="error")
+            return redirect("/search")
         cashflow_info_df = generate_dataframe(cashflow_info)
         plot_data = generate_plot(cashflow_info_df, "Daily cash flows")
         session['customer_id'] = customer_id
@@ -80,7 +81,7 @@ def customer_result():
         if gender != '':
             query['gender'] = gender
 
-        customer_records = list(mongo.db.customer.find(query, {'cashflows': 0, '_id': 0}))
+        customer_records = list(mongo.db.customer.find(query, {'_id': 0}))
         customer_ids = tuple(elem['user_id'] for elem in customer_records)
         num_customer_records = len(customer_ids)
         cql = f"""
@@ -104,7 +105,8 @@ def forecast_result():
         overall_cashflow_df = generate_dataframe(overall_cashflow_info)
 
         if len(overall_cashflow_info) <= 15:
-            return "less than 15 days of record; we cannot forecast"
+            flash("less than 15 days of record; we cannot forecast", category="error")
+            return redirect("/search")
 
         num_future_dates = int(request.form.get('num_future_steps'))
         forecast_plot_data, arima_order = auto_arima_forecasting(overall_cashflow_df['tbalance'], num_future_dates,

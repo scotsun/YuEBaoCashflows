@@ -49,6 +49,19 @@ def generate_cashflow_dict(row):
     return cashflow_dict
 
 
+def generate_rate_plot(df):
+    plot = Figure()
+    ax = plot.subplots()
+    df.plot(ax=ax)
+    ax.set_xlabel('date')
+    ax.set_ylabel('rate (%)')
+    ax.set_title("interest rate (annualized) overtime")
+    buf = BytesIO()
+    plot.savefig(buf, format='png')
+    data = base64.b64encode(buf.getbuffer()).decode('ascii')
+    return data
+
+
 def generate_plot(df, title):
     plot = Figure()
     ax = plot.subplots()
@@ -57,6 +70,16 @@ def generate_plot(df, title):
     ax.set_xlabel('date')
     ax.set_ylabel('CNY (0.01)')
     ax.set_title(title)
+    buf = BytesIO()
+    plot.savefig(buf, format='png')
+    data = base64.b64encode(buf.getbuffer()).decode('ascii')
+    return data
+
+
+def generate_blank_plot():
+    plot = Figure()
+    ax = plot.subplots()
+    ax.set_title('No data records')
     buf = BytesIO()
     plot.savefig(buf, format='png')
     data = base64.b64encode(buf.getbuffer()).decode('ascii')

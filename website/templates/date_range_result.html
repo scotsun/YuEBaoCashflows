@@ -2,7 +2,10 @@
 {% block content %}
 <br/>
 <h1>Results of {{ user_profile.name }}, user ID: {{ user_profile.user_id }} </h1>
-<img src="data:image/png;base64, {{ plot_data }}" class="mx-auto d-block" alt=""/>
+
+    <body>
+    <img src="data:image/png;base64, {{ plot_data }}" class="mx-auto d-block" alt=""/>
+    </body>
 <br/>
 <form action="{{url_for('views.forecast_result')}}" method="POST">
     <div class="form-group">

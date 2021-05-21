@@ -1,8 +1,38 @@
-{% extends "base.html"%} {% block title %}Analytics{% endblock %}
+{% extends "base.html"%} {% block title %}Analytics of {{ name }}{% endblock %}
 {% block content %}
 <br/>
-<h1>View Analytics Report</h1>
-
-
+    <h3 align="center"> {{ name }}'s Analytics Report</h3>
+    <h5>Report Generated on: {{ report_date }}</h5>
+    <h5>From: {{ start_date }}, to {{ end_date }}</h5>
+    <h5>Properties Used in the Analysis:</h5>
+    <table class="table table-dark table-striped">
+        {% for key, value in customer_properties.items() %}
+        <tr>
+            <th>{{ key }}</th>
+            <td>{{ value }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <body>
+    <img src="data:image/png;base64, {{ group_plot }}" class="mx-auto d-block" alt=""/>
+    </body>
+    <hr>
+    <body>
+    <img src="data:image/png;base64, {{ forecast_plot }}" class="mx-auto d-block" alt=""/>
+    </body>
+    <hr>
+    <h3 align="center">Investment Advice</h3>
+    <h5>As of {{ end_date }}:</h5>
+    <table class="table table-dark table-striped">
+        {% for key, value in advice.items() %}
+        <tr>
+            <th>{{ key }}</th>
+            <td>{{ value }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <body>
+    <img src="data:image/png;base64, {{ interest_rate_plot }}" class="mx-auto d-block" alt=""/>
+    </body>
 {% endblock %}
 
