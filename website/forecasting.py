@@ -3,7 +3,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pmdarima as pm
 from datetime import timedelta
-
 from matplotlib.figure import Figure
 from io import BytesIO
 import base64

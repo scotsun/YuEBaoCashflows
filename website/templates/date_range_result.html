@@ -1,7 +1,7 @@
 {% extends "base.html"%} {% block title %}Range Result{% endblock %}
 {% block content %}
 <br/>
-<h1>Results of User ID: {{ user_profile.user_id }} </h1>
+<h1>Results of {{ user_profile.name }}, user ID: {{ user_profile.user_id }} </h1>
 <img src="data:image/png;base64, {{ plot_data }}" class="mx-auto d-block" alt=""/>
 <br/>
 <form action="{{url_for('views.forecast_result')}}" method="POST">

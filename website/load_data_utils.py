@@ -1,26 +1,19 @@
 import numpy as np
 import pandas as pd
+import names
 import base64
 from io import BytesIO
 from matplotlib.figure import Figure
 
 
-def generate_customer_dict(user_id, profile_tbl, cashflow_tbl):
+def generate_customer_dict(user_id, profile_tbl):
     customer_dict = dict()
     customer_row = profile_tbl.loc[profile_tbl['user_id'] == user_id].iloc[0]
     customer_dict['user_id'] = int(customer_row['user_id'])
-    customer_dict['sex'] = int(customer_row['sex'])
+    customer_dict['gender'] = 'male' if int(customer_row['sex']) == 1 else 'female'
+    customer_dict['name'] = names.get_full_name(gender=customer_dict['gender'])
     customer_dict['city'] = customer_row['city']
     customer_dict['constellation'] = customer_row['constellation']
-
-    cashflows = []
-    num_records = cashflow_tbl.loc[cashflow_tbl['user_id'] == user_id].shape[0]
-    for i in range(num_records):
-        row = cashflow_tbl.loc[cashflow_tbl['user_id'] == user_id].iloc[i, :]
-        cashflow = generate_cashflow_dict(row)
-        cashflows.append(cashflow)
-
-    customer_dict['cashflows'] = cashflows
     return customer_dict
 
 
@@ -56,13 +49,14 @@ def generate_cashflow_dict(row):
     return cashflow_dict
 
 
-def generate_plot(df):
+def generate_plot(df, title):
     plot = Figure()
     ax = plot.subplots()
     df.plot(ax=ax)
     ax.legend(['balance', 'daily inflow', 'daily output'])
     ax.set_xlabel('date')
     ax.set_ylabel('CNY (0.01)')
+    ax.set_title(title)
     buf = BytesIO()
     plot.savefig(buf, format='png')
     data = base64.b64encode(buf.getbuffer()).decode('ascii')

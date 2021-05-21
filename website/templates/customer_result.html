@@ -1,11 +1,12 @@
 {% extends "base.html"%} {% block title %}Customer result{% endblock %}
 {% block content %}
-<br/>
-<h1>Results of customer: {{ num_customer_records }} </h1>
+<br>
+<h1>Number of matched customers: {{ num_customer_records }} </h1>
 
     <body>
     <img src="data:image/png;base64, {{ plot_data }}" class="mx-auto d-block" alt=""/>
     </body>
+    <hr>
 {% for item in customer_records %}
 <table class="table table-dark table-hover">
     {% for key, value in item.items() %}
