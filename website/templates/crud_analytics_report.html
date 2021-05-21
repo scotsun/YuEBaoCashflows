@@ -4,7 +4,7 @@
     <h1>Analytics Report</h1>
     <hr>
     <form method="POST">
-        <input type="hidden" name="form_type" value="single">
+        <input type="hidden" name="btn_type" value="create_edit">
         <h3 align="center">Create Customer's Analytics Report</h3>
         <div class="form-group">
             <label for="customer_name">Customer ID</label>
@@ -54,7 +54,7 @@
     <br>
     <br>
     <form action="{{ url_for('analytics.view_all_report_properties') }}" method="POST">
-        <input type="hidden" name="form_type" value="single">
+        <input type="hidden" name="btn_type" value="view_all">
         <h3 align="center">All of Customer's Analytics Reports</h3>
         <div class="form-group">
             <label for="customer_name1">Customer Name</label>
@@ -67,7 +67,6 @@
     <br>
     <br>
     <form action="{{url_for('analytics.view_report')}}" method="POST">
-        <input type="hidden" name="form_type" value="single">
         <h3 align="center">View Customer's Analytics Report</h3>
         <div class="form-group">
             <label for="customer_name2">Customer Name</label>
@@ -80,6 +79,23 @@
                    placeholder="Enter date" required>
         </div>
         <button type="submit" id="submit2" class="btn btn-primary">View Report</button>
+    </form>
+    <br>
+    <br>
+    <form method="POST">
+        <h3 align="center">Delete Customer's Analytics Report</h3>
+        <div class="form-group">
+            <label for="customer_name2">Customer Name</label>
+            <input type="text" class="form-control" name="customer_name2" id="customer_name2"
+                   placeholder="Enter name" required>
+        </div>
+        <div class="form-group">
+            <label for="report_date">Report Created Date</label>
+            <input type="number" min="0" step="1" class="form-control" name="report_date" id="report_date"
+                   placeholder="Enter date" required>
+        </div>
+        <input type="hidden" name="btn_type" value="delete">
+        <button type="submit" id="delete" class="btn btn-primary">Delete Report</button>
     </form>
 
 {% endblock %}

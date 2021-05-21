@@ -41,47 +41,71 @@ def dates_correct(report_date, ana_date1, ana_date2):
     return ana_dates_check and report_date_check
 
 
-@analytics.route('/create_analytics_report', methods=['POST', 'GET'])
-def create_analytics_report():
+@analytics.route('/crud_analytics_report', methods=['POST', 'GET'])
+def crud_analytics_report():
+    if request.method == 'GET':
+        return render_template("crud_analytics_report.html")
     # auth_username = session.get('auth_username', None) TODO: change back after merge
     auth_username = "test"
 
-    if request.method == 'GET':
-        return render_template("create_analytics_report.html")
+    btn_type = request.form.get("btn_type")
+    if btn_type == "create":
+        customer_id = int(request.form.get('customer_id'))
+        customer_name = request.form.get('customer_name')
 
-    customer_id = int(request.form.get('customer_id'))
-    customer_name = request.form.get('customer_name')
+        if not match_customer(customer_id, customer_name):
+            flash('Incorrect Customer ID or Name, try again.', category='error')
 
-    if not match_customer(customer_id, customer_name):
-        flash('Incorrect Customer ID or Name, try again.', category='error')
+        report_date = int(request.form.get('date'))
+        ana_date1 = int(request.form.get('date1'))
+        ana_date2 = int(request.form.get('date2'))
 
-    report_date = int(request.form.get('date'))
-    ana_date1 = int(request.form.get('date1'))
-    ana_date2 = int(request.form.get('date2'))
+        if not dates_correct(report_date, ana_date1, ana_date2):
+            flash('Ending date should be after staring date, and the report should be created after the ending date',
+                  category='error')
 
-    if not dates_correct(report_date, ana_date1, ana_date2):
-        flash('Ending date should be after staring date, and the report should be created after the ending date',
-              category='error')
+        num_future_days = int(request.form.get('num_future_date'))
+        customer_properties = []
+        city = request.form.get('properties_boxes_1')
+        gender = request.form.get('properties_boxes_2')
+        constellation = request.form.get('properties_boxes_3')
+        for elem in [city, gender, constellation]:
+            if elem:
+                customer_properties.append(elem)
+        session['customer_name'] = customer_name
+        report_prime_key = {'user_id': customer_id,
+                            'report_date': report_date}
+        mongo.db.appUser.update({'username': auth_username}, {"$addToSet": {"reports": report_prime_key}})
+        cql = f"""
+            insert into analytics_report (user_id, report_date, end_date, num_fdays, property, start_date)
+            values ({customer_id}, {report_date}, {ana_date2}, {num_future_days}, {set(customer_properties)}, {ana_date1})
+            """
+        cassandra.execute(cql)
+    elif btn_type == "delete":
+        customer_name = request.form.get('customer_name2')
+        print(customer_name)
+        customer = get_customer(customer_name)
+        if customer is None:
+            flash("Customer does not exist, try again.", category='error')
+            return redirect("/crud_analytics_report")
+        customer_id = customer['user_id']
+        report_date = int(request.form.get('report_date'))
 
-    num_future_days = int(request.form.get('num_future_date'))
-    customer_properties = []
-    city = request.form.get('properties_boxes_1')
-    gender = request.form.get('properties_boxes_2')
-    constellation = request.form.get('properties_boxes_3')
-    for elem in [city, gender, constellation]:
-        if elem:
-            customer_properties.append(elem)
-    session['customer_name'] = customer_name
-    report_prime_key = {'user_id': customer_id,
-                        'report_date': report_date}
-    cql = f"""
-        insert into analytics_report (user_id, report_date, end_date, num_fdays, property, start_date)
-        values ({customer_id}, {report_date}, {ana_date2}, {num_future_days}, {set(customer_properties)}, {ana_date1})
-        """
+        report_info = get_report(customer_id, report_date)
+        if report_info is None:
+            flash("Such report does not exist.", category='error')
+            return redirect("/crud_analytics_report")
 
-    mongo.db.appUser.update({'username': auth_username}, {"$addToSet": {"reports": report_prime_key}})
-    cassandra.execute(cql)
-    return render_template("create_analytics_report.html")
+        mongo.db.appUser.update({'username': auth_username},
+                                {'$pull': {'reports': {'user_id': customer_id, 'report_date': report_date}}}
+                                )
+        cql = f"""
+            delete from analytics_report 
+            where user_id = {customer_id} and report_date = {report_date};
+            """
+        cassandra.execute(cql)
+
+    return render_template("crud_analytics_report.html")
 
 
 @analytics.route('/view_all_report_properties', methods=['POST', 'GET'])
@@ -91,7 +115,7 @@ def view_all_report_properties():
         customer = get_customer(customer_name)
         if customer is None:
             flash("Customer does not exist, try again.", category='error')
-            return redirect("/create_analytics_report")
+            return redirect("/crud_analytics_report")
         customer_id = customer['user_id']
         cql = f"""
             select * from analytics_report where user_id = {customer_id}
@@ -99,7 +123,7 @@ def view_all_report_properties():
         report_properties = list(cassandra.execute(cql))
         if not report_properties:
             flash("No report created yet.", category='error')
-            return redirect("/create_analytics_report")
+            return redirect("/crud_analytics_report")
         return render_template("view_all_report_properties.html", user_profile=customer,
                                report_properties=report_properties)
 
@@ -111,14 +135,14 @@ def view_report():
         customer = get_customer(customer_name)
         if customer is None:
             flash("Customer does not exist, try again.", category='error')
-            return redirect("/create_analytics_report")
+            return redirect("/crud_analytics_report")
         customer_id = customer['user_id']
         report_date = int(request.form.get('report_date'))
 
         report_info = get_report(customer_id, report_date)
         if report_info is None:
             flash("Incorrect name or date.", category='error')
-            return redirect("/create_analytics_report")
+            return redirect("/crud_analytics_report")
 
         start_date = report_info['start_date']
         end_date = report_info['end_date']
@@ -141,4 +165,4 @@ def view_report():
                                start_date=start_date, end_date=end_date, customer_properties=customer_properties,
                                advice=advice)
     else:
-        return redirect("/create_analytics_report")
+        return redirect("/crud_analytics_report")
