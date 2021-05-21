@@ -1,0 +1,41 @@
+{% extends "base.html"%} {% block title %}Edit Analytics of {{ name }}{% endblock %}
+{% block content %}
+<br/>
+    <h3 align="center"> Edit {{ name }}'s Analytics Report on {{ report_date }}</h3>
+    <form action="{{url_for('analytics.crud_analytics_report')}}" method="POST">
+    <input type="hidden" name="btn_type" value="edit">
+        <div class="form-group">
+            <label for="date">Report Created Date</label>
+            <input type="number" min="0" step="1" class="form-control" name="date" id="date" placeholder="Enter date" required>
+        </div>
+        <div class="form-group">
+            <label for="date1">Starting Date for Analysis</label>
+            <input type="number" min="0" step="1" class="form-control" name="date1" id="date1" placeholder="Enter start date" required>
+        </div>
+        <div class="form-group">
+            <label for="date2">Ending Date for Analysis</label>
+            <input type="number" min="0" step="1" class="form-control" name="date2" id="date2" placeholder="Enter end date" required>
+        </div>
+        <div class="form-group">
+            <label for="num_future_date">Number of Future Forecasting Days</label>
+            <input type="number" min="0" step="1" class="form-control" name="num_future_date" id="num_future_date"
+                   placeholder="Enter end date" required>
+        </div>
+        <div class="form-group">
+            <label class="description" for="properties_boxes">Properties used for analysis</label>
+            <br>
+            <span>
+                <input id="properties_boxes_1" name="properties_boxes_1" class="element checkbox" type="checkbox"
+                       value="city">
+                <label class="choice" for="properties_boxes_1">city</label> &nbsp;
+                <input id="properties_boxes_2" name="properties_boxes_2" class="element checkbox" type="checkbox"
+                       value="gender" required>
+                <label class="choice" for="properties_boxes_2">gender</label> &nbsp;
+                <input id="properties_boxes_3" name="properties_boxes_3" class="element checkbox" type="checkbox"
+                       value="constellation">
+                <label class="choice" for="properties_boxes_3">constellation</label>
+            </span>
+        </div>
+        <button type="submit" id="submit1" class="btn btn-primary">Edit Properties</button>
+    </form>
+{% endblock %}

@@ -19,6 +19,12 @@ class User(UserMixin):
 			return cls(**data)
 
 	@classmethod
+	def get_by_username(cls, username):
+		data = mongo.db.appUser.find_one({"username": username})
+		if data is not None:
+			return cls(**data)
+
+	@classmethod
 	def get_by_id(cls, _id):
 		data = mongo.db.appUser.find_one({"_id": _id})
 		if data is not None:
@@ -40,7 +46,8 @@ class User(UserMixin):
 			"username":self.username,
 			"email": self.email,
 			"_id": self._id,
-			"password": self.password
+			"password": self.password,
+			"reports":[]
 		}
 
 

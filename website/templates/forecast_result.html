@@ -4,6 +4,8 @@
 <h1>Forecast result for user {{ customer_id }} for {{num_future_dates}} days.</h1>
 <body>
     <img src="data:image/png;base64, {{ forecast_plot_data }}" class="mx-auto d-block" alt=""/>
+    <img src="data:image/png;base64, {{ acf_plot_data }}" class="mx-auto d-block" alt=""/>
+    <img src="data:image/png;base64, {{ pacf_plot_data }}" class="mx-auto d-block" alt=""/>
 </body>
 {% endblock %}
 
