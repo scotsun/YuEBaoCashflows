@@ -3,7 +3,7 @@
 <br/>
     <h3 align="center"> {{ name }}'s Analytics Report</h3>
     <h5>Report Generated on: {{ report_date }}</h5>
-    <h5>From: {{ start_date }}, to {{ end_date }}</h5>
+    <h5>From: {{ start_date }}; To: {{ end_date }}</h5>
     <h5>Properties Used in the Analysis:</h5>
     <table class="table table-dark table-striped">
         {% for key, value in customer_properties.items() %}

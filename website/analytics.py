@@ -9,12 +9,16 @@ analytics = Blueprint('analytics', __name__)
 
 
 def get_report(customer_id, report_date):
-    data = mongo.db.report.find_one({'user_id': customer_id, 'report_date': report_date})
+    cql = f"""
+        select * from analytics_report 
+        where user_id = {customer_id} and report_date = {report_date};
+        """
+    data = cassandra.execute(cql)[0]
     return data
 
 
 def get_customer(customer_name):
-    data = mongo.db.customer.find_one({'name': customer_name}, {'_id':0})
+    data = mongo.db.customer.find_one({'name': customer_name}, {'_id': 0})
     return data
 
 
@@ -39,6 +43,9 @@ def dates_correct(report_date, ana_date1, ana_date2):
 
 @analytics.route('/create_analytics_report', methods=['POST', 'GET'])
 def create_analytics_report():
+    # auth_username = session.get('auth_username', None) TODO: change back after merge
+    auth_username = "test"
+
     if request.method == 'GET':
         return render_template("create_analytics_report.html")
 
@@ -65,19 +72,14 @@ def create_analytics_report():
         if elem:
             customer_properties.append(elem)
     session['customer_name'] = customer_name
-    report_dict = {'user_id': customer_id,
-                   'report_date': report_date,
-                   'start_date': ana_date1,
-                   'end_date': ana_date2,
-                   'num_fdays': num_future_days,
-                   'property': customer_properties}
-
+    report_prime_key = {'user_id': customer_id,
+                        'report_date': report_date}
     cql = f"""
         insert into analytics_report (user_id, report_date, end_date, num_fdays, property, start_date)
         values ({customer_id}, {report_date}, {ana_date2}, {num_future_days}, {set(customer_properties)}, {ana_date1})
         """
 
-    mongo.db.report.insert_one(report_dict)
+    mongo.db.appUser.update({'username': auth_username}, {"$addToSet": {"reports": report_prime_key}})
     cassandra.execute(cql)
     return render_template("create_analytics_report.html")
 
@@ -91,7 +93,10 @@ def view_all_report_properties():
             flash("Customer does not exist, try again.", category='error')
             return redirect("/create_analytics_report")
         customer_id = customer['user_id']
-        report_properties = list(mongo.db.report.find({"user_id": customer_id}, {"_id": 0}))
+        cql = f"""
+            select * from analytics_report where user_id = {customer_id}
+            """
+        report_properties = list(cassandra.execute(cql))
         if not report_properties:
             flash("No report created yet.", category='error')
             return redirect("/create_analytics_report")
