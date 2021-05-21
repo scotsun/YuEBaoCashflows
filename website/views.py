@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, session, redirect, flash
 from . import mongo
 from . import cassandra
+from . import cache
 from .forecasting import *
 from .load_data_utils import generate_plot, generate_dataframe, get_group_mean_result
 
@@ -39,6 +40,7 @@ def date_result():
 
 
 @views.route('/date_range_result', methods=['GET', 'POST'])
+@cache.cached(timeout=50)
 def date_range_result():
     if request.method == "POST":
         customer_id = int(request.form.get('customer_id2'))
