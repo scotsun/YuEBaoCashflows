@@ -57,6 +57,7 @@ def crud_analytics_report():
 
         if not match_customer(customer_id, customer_name):
             flash('Incorrect Customer ID or Name, try again.', category='error')
+            return redirect("/crud_analytics_report")
 
         report_date = int(request.form.get('date'))
         ana_date1 = int(request.form.get('date1'))
@@ -65,6 +66,7 @@ def crud_analytics_report():
         if not dates_correct(report_date, ana_date1, ana_date2):
             flash('Ending date should be after staring date, and the report should be created after the ending date',
                   category='error')
+            return redirect("/crud_analytics_report")
 
         num_future_days = int(request.form.get('num_future_date'))
         customer_properties = []
@@ -182,7 +184,7 @@ def edit_report():
         report_date = int(request.form.get('report_date3'))
         report_info = get_report(customer_id, report_date)
         if report_info is None:
-            flash("Incorrect name or date.", category='error')
+            flash("Incorrect name or date; the report does not exist.", category='error')
             return redirect("/crud_analytics_report")
         session['to_edit_customer_id'] = customer_id
         session['to_edit_report_date'] = report_date
