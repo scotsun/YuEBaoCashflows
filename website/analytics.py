@@ -13,8 +13,10 @@ def get_report(customer_id, report_date):
         select * from analytics_report 
         where user_id = {customer_id} and report_date = {report_date};
         """
-    data = cassandra.execute(cql)[0]
-    return data
+    data = cassandra.execute(cql)
+    if not data:
+        return None
+    return data[0]
 
 
 def get_customer(customer_name):
@@ -77,13 +79,13 @@ def crud_analytics_report():
                             'report_date': report_date}
         mongo.db.appUser.update({'username': auth_username}, {"$addToSet": {"reports": report_prime_key}})
         cql = f"""
-            insert into analytics_report (user_id, report_date, end_date, num_fdays, property, start_date)
-            values ({customer_id}, {report_date}, {ana_date2}, {num_future_days}, {set(customer_properties)}, {ana_date1})
-            """
+                    insert into analytics_report (user_id, report_date, end_date, num_fdays, property, start_date)
+                    values ({customer_id}, {report_date}, {ana_date2}, {num_future_days}, {set(customer_properties)}, {ana_date1})
+                    """
         cassandra.execute(cql)
+        flash("created report!", category="success")
     elif btn_type == "delete":
         customer_name = request.form.get('customer_name2')
-        print(customer_name)
         customer = get_customer(customer_name)
         if customer is None:
             flash("Customer does not exist, try again.", category='error')
@@ -100,11 +102,51 @@ def crud_analytics_report():
                                 {'$pull': {'reports': {'user_id': customer_id, 'report_date': report_date}}}
                                 )
         cql = f"""
-            delete from analytics_report 
-            where user_id = {customer_id} and report_date = {report_date};
-            """
+                    delete from analytics_report 
+                    where user_id = {customer_id} and report_date = {report_date};
+                    """
         cassandra.execute(cql)
+        flash("deleted report", category="success")
+    elif btn_type == "edit":
+        customer_id = session.get('to_edit_customer_id', None)
+        report_date = session.get('to_edit_report_date', None)
 
+        # delete
+        mongo.db.appUser.update({'username': auth_username},
+                                {'$pull': {'reports': {'user_id': customer_id, 'report_date': report_date}}}
+                                )
+        cql = f"""
+                    delete from analytics_report 
+                    where user_id = {customer_id} and report_date = {report_date};
+                    """
+        cassandra.execute(cql)
+        # insert new
+        new_report_date = int(request.form.get('date'))
+        ana_date1 = int(request.form.get('date1'))
+        ana_date2 = int(request.form.get('date2'))
+
+        if not dates_correct(new_report_date, ana_date1, ana_date2):
+            flash('Ending date should be after staring date, and the report should be created after the ending date',
+                  category='error')
+            return redirect("/edit_report")
+
+        num_future_days = int(request.form.get('num_future_date'))
+        customer_properties = []
+        city = request.form.get('properties_boxes_1')
+        gender = request.form.get('properties_boxes_2')
+        constellation = request.form.get('properties_boxes_3')
+        for elem in [city, gender, constellation]:
+            if elem:
+                customer_properties.append(elem)
+        report_prime_key = {'user_id': customer_id,
+                            'report_date': report_date}
+        mongo.db.appUser.update({'username': auth_username}, {"$addToSet": {"reports": report_prime_key}})
+        cql = f"""
+                    insert into analytics_report (user_id, report_date, end_date, num_fdays, property, start_date)
+                    values ({customer_id}, {new_report_date}, {ana_date2}, {num_future_days}, {set(customer_properties)}, {ana_date1})
+                    """
+        cassandra.execute(cql)
+        flash("updated report!", category="success")
     return render_template("crud_analytics_report.html")
 
 
@@ -126,6 +168,31 @@ def view_all_report_properties():
             return redirect("/crud_analytics_report")
         return render_template("view_all_report_properties.html", user_profile=customer,
                                report_properties=report_properties)
+
+
+@analytics.route('/edit_report', methods=['POST', 'GET'])
+def edit_report():
+    if request.method == "POST":
+        customer_name = request.form.get('customer_name3')
+        customer = get_customer(customer_name)
+        if customer is None:
+            flash("Customer does not exist, try again.", category='error')
+            return redirect("/crud_analytics_report")
+        customer_id = customer['user_id']
+        report_date = int(request.form.get('report_date3'))
+        report_info = get_report(customer_id, report_date)
+        if report_info is None:
+            flash("Incorrect name or date.", category='error')
+            return redirect("/crud_analytics_report")
+        session['to_edit_customer_id'] = customer_id
+        session['to_edit_report_date'] = report_date
+
+        print(session.get('to_edit_customer_id'))
+        print(session.get('to_edit_report_date'))
+
+        return render_template('edit_report.html', name=customer_name, report_date=report_date)
+    else:
+        return redirect("/crud_analytics_report")
 
 
 @analytics.route('/view_report', methods=['POST', 'GET'])

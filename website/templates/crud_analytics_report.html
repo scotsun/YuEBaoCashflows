@@ -4,7 +4,7 @@
     <h1>Analytics Report</h1>
     <hr>
     <form method="POST">
-        <input type="hidden" name="btn_type" value="create_edit">
+        <input type="hidden" name="btn_type" value="create">
         <h3 align="center">Create Customer's Analytics Report</h3>
         <div class="form-group">
             <label for="customer_name">Customer ID</label>
@@ -63,7 +63,6 @@
         </div>
         <button type="submit" id="submit2" class="btn btn-primary">View All Report Information</button>
     </form>
-
     <br>
     <br>
     <form action="{{url_for('analytics.view_report')}}" method="POST">
@@ -79,6 +78,22 @@
                    placeholder="Enter date" required>
         </div>
         <button type="submit" id="submit2" class="btn btn-primary">View Report</button>
+    </form>
+    <br>
+    <br>
+    <form action="{{url_for('analytics.edit_report')}}" method="POST">
+        <h3 align="center">Edit Customer's Analytics Report</h3>
+        <div class="form-group">
+            <label for="customer_name3">Customer Name</label>
+            <input type="text" class="form-control" name="customer_name3" id="customer_name3"
+                   placeholder="Enter name" required>
+        </div>
+        <div class="form-group">
+            <label for="report_date3">Report Created Date</label>
+            <input type="number" min="0" step="1" class="form-control" name="report_date3" id="report_date3"
+                   placeholder="Enter date" required>
+        </div>
+        <button type="submit" id="submit2" class="btn btn-primary">Edit Report</button>
     </form>
     <br>
     <br>
